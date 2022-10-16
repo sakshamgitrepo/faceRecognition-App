@@ -10,11 +10,6 @@ import ImageLinkForm from "./components/ImageLinkForm/ImageLinkForm";
 import Rank from "./components/Rank/Rank";
 import "./App.css";
 
-//You must add your own API key here from Clarifai.
-const app = new Clarifai.App({
-  apiKey: "7fde0333fa9b419189004df2254258b4",
-});
-
 const particlesOptions = {
   particles: {
     number: {
@@ -27,23 +22,25 @@ const particlesOptions = {
   },
 };
 
+const initial_state = {
+  input: "",
+  imageUrl: "",
+  box: {},
+  route: "signin",
+  isSignedIn: false,
+  user: {
+    id: "",
+    name: "",
+    email: "",
+    entries: 0,
+    joined: "",
+  },
+};
+
 class App extends Component {
   constructor() {
     super();
-    this.state = {
-      input: "",
-      imageUrl: "",
-      box: {},
-      route: "signin",
-      isSignedIn: false,
-      user: {
-        id: "",
-        name: "",
-        email: "",
-        entries: 0,
-        joined: "",
-      },
-    };
+    this.state = initial_state;
   }
 
   loadUser = (data) => {
@@ -83,10 +80,16 @@ class App extends Component {
 
   onButtonSubmit = () => {
     this.setState({ imageUrl: this.state.input });
-    app.models
-      .predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+
+    fetch("http://localhost:3000/imageurl", {
+      method: "post",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        input: this.state.input,
+      }),
+    })
+      .then((response) => response.json())
       .then((response) => {
-        this.displayFaceBox(this.calculateFaceLocation(response));
         if (response) {
           fetch("http://localhost:3000/image", {
             method: "put",
@@ -107,7 +110,7 @@ class App extends Component {
 
   onRouteChange = (route) => {
     if (route === "signout") {
-      this.setState({ isSignedIn: false });
+      this.setState(initial_state);
     } else if (route === "home") {
       this.setState({ isSignedIn: true });
     }

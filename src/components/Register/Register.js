@@ -36,8 +36,9 @@ class Register extends React.Component {
       .then(user => {
         if (user.id) {
           this.props.loadUser(user)
-          console.log(user);
           this.props.onRouteChange('home');
+        }else{
+          alert('Something Went Wrong')
         }
       })
   }
