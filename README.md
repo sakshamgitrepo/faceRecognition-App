@@ -21,6 +21,7 @@ PostgreSQL
 APIs
 ----
 Clarifai
+
 faceRecognition-App-Backend server
 
 1. Clone this repo
